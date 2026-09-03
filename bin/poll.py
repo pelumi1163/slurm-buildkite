@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+import logging
+# setup root logger
+logger = logging.Logger('poll')
+handler = logging.StreamHandler()
+# For debug statements: handler.setLevel(logging.DEBUG)
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 import os
 
 # Which poller implementation to run: 'rest' (default) polls the Buildkite
@@ -11,14 +21,6 @@ import os
 BUILDKITE_POLL_MODE = os.environ.get('BUILDKITE_POLL_MODE', 'rest')
 
 if BUILDKITE_POLL_MODE == 'metrics':
-    import logging
-    logger = logging.Logger('poll')
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
     import metrics_poll
     try:
         metrics_poll.run(logger)
@@ -26,16 +28,6 @@ if BUILDKITE_POLL_MODE == 'metrics':
         logger.error("Caught exception during metrics poll", exc_info=True)
 
 else:
-    import logging
-    # setup root logger
-    logger = logging.Logger('poll')
-    handler = logging.StreamHandler()
-    # For debug statements: handler.setLevel(logging.DEBUG)
-    handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
     import re
     from datetime import date
     from os.path import join as joinpath
